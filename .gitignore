@@ -1,0 +1,8 @@
+configure
+Makefile.in
+config.h.in
+aclocal.m4
+autom4te.cache
+auxdir
+build
+debug
