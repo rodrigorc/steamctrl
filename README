@@ -1,0 +1,25 @@
+steamctrl - Utility to setup Valve Steam Controller
+
+This utility is meant to be used with the hid-steam Linux driver.
+It can be used to disable and the mouse/keyboard emulation, as well as setup
+a few other parameters.
+
+If you want to run it automatically upon connection you can use a udev rule
+such as the following:
+
+ACTION=="add", SUBSYSTEM=="input", ATTR{uniq}=="?*", ATTRS{idVendor}=="28de", RUN+="/usr/bin/steamctrl -s $attr{uniq} disable_keys_cursor disable_mouse
+
+But note that this rule will not work without the hid-steam driver, because
+it relies on the UNIQ value, and hid-generic doesn't set it.
+
+Maybe you noticed that there are a few missing commands, for example, there is
+'disable_keys_cursor' and 'disable_cursor', but not 'disable_keys'. I just
+don't know how to do them.
+
+If you know more about this kind of commands, please send a note to one of
+these:
+
+    https://github.com/rodrigorc/steamctrl
+    rodrigorivascosta@gmail.com
+
+Thank you for your attention.
