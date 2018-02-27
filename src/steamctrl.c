@@ -198,7 +198,7 @@ static void cmd_led(int fd, char **args)
     }
     steam_write_register(fd, 0x2d, n);
 }
-static void cmd_register(int fd, char **args)
+static void cmd_write(int fd, char **args)
 {
     char *end;
     int reg, val;
@@ -207,7 +207,7 @@ static void cmd_register(int fd, char **args)
         val = strtol(args[1], &end, 0);
     if (*end)
     {
-        fprintf(stderr, "bad argument for 'register'\n");
+        fprintf(stderr, "bad argument for 'write'\n");
         return;
     }
     steam_write_register(fd, reg, val);
@@ -286,9 +286,9 @@ static struct command commands[] =
      * Use them at your own responsibility.
      */
     {
-        "register", 2,
+        "write", 2,
         NULL, //"R X: writes value X (16 bits) into register R (8 bits)",
-        cmd_register,
+        cmd_write,
     },
     {
         "send", 1,
