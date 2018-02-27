@@ -188,7 +188,6 @@ static void cmd_enable_rmargin(int fd, char **args)
 }
 static void cmd_register(int fd, char **args)
 {
-    printf("%s\n", args[0]);
     char *end;
     int reg, val;
     reg = strtol(args[0], &end, 0);
