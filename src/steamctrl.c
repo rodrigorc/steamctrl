@@ -186,6 +186,18 @@ static void cmd_enable_rmargin(int fd, char **args)
 {
     steam_write_register(fd, 0x18, 1);
 }
+static void cmd_led(int fd, char **args)
+{
+    char *end;
+    int n;
+    n = strtol(args[0], &end, 0);
+    if (*end || n < 0 || n > 100)
+    {
+        fprintf(stderr, "bad argument for 'led'\n");
+        return;
+    }
+    steam_write_register(fd, 0x2d, n);
+}
 static void cmd_register(int fd, char **args)
 {
     char *end;
@@ -264,6 +276,11 @@ static struct command commands[] =
         "enable_rmargin", 0,
         ": enables the dead margin on the right pad",
         cmd_enable_rmargin,
+    },
+    {
+        "led", 1,
+        "N: sets the led brightness to N%",
+        cmd_led,
     },
     /* WARNING: The following commands are undocumented because they can be used to do evil.
      * Use them at your own responsibility.
