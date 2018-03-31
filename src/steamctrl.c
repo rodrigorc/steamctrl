@@ -172,11 +172,15 @@ static void cmd_disable_mouse(int fd, char **args)
 }
 static void cmd_enable_mouse(int fd, char **args)
 {
-    steam_send_report_byte(fd, 0x8e);
+    steam_write_register(fd, 0x08, 0x00);
 }
 static void cmd_disable_cursor(int fd, char **args)
 {
     steam_write_register(fd, 0x07, 0x07);
+}
+static void cmd_enable_cursor(int fd, char **args)
+{
+    steam_write_register(fd, 0x07, 0x00);
 }
 static void cmd_disable_rmargin(int fd, char **args)
 {
@@ -266,6 +270,11 @@ static struct command commands[] =
         "disable_cursor", 0,
         ": disables the emulation of the cursor keys by the joystick",
         cmd_disable_cursor,
+    },
+    {
+        "enable_cursor", 0,
+        ": enables the emulation of the cursor keys by the joystick",
+        cmd_enable_cursor,
     },
     {
         "disable_rmargin", 0,
