@@ -224,6 +224,20 @@ static void cmd_write(int fd, char **args)
     }
     steam_write_register(fd, reg, val);
 }
+static void cmd_read(int fd, char **args)
+{
+    char *end;
+    int reg;
+    uint16_t val = 0;
+    reg = strtol(args[0], &end, 0);
+    if (*end)
+    {
+        fprintf(stderr, "bad argument for 'write'\n");
+        return;
+    }
+    steam_read_register(fd, reg, &val);
+    printf("0x%04x\n", val);
+}
 static void cmd_send(int fd, char **args)
 {
     uint8_t buf[64];
@@ -316,6 +330,11 @@ static struct command commands[] =
         "write", 2,
         NULL, //"R X: writes value X (16 bits) into register R (8 bits)",
         cmd_write,
+    },
+    {
+        "read", 1,
+        NULL, //"R: reads value X from register R (8 bits)",
+        cmd_read,
     },
     {
         "send", 1,

@@ -68,6 +68,20 @@ int steam_write_register(int fd, uint8_t reg, uint16_t value)
     return steam_send_report(fd, cmd, sizeof(cmd));
 }
 
+int steam_read_register(int fd, uint8_t reg, uint16_t *value)
+{
+    uint8_t cmd[] = {0x89, 0x03, reg};
+    uint8_t reply[64];
+    int res = steam_send_report(fd, cmd, sizeof(cmd));
+    if (res < 0)
+        return res;
+    res = steam_recv_report(fd, reply);
+    if (res < 0)
+        return res;
+    *value = reply[3] | (reply[4] << 8);
+    return res;
+}
+
 int steam_get_serial(int fd, char serial[11])
 {
     int res;
