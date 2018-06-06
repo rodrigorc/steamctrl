@@ -174,6 +174,14 @@ static void cmd_enable_mouse(int fd, char **args)
 {
     steam_write_register(fd, 0x08, 0x00);
 }
+static void cmd_disable_acc(int fd, char **args)
+{
+    steam_write_register(fd, 0x30, 0x00);
+}
+static void cmd_enable_acc(int fd, char **args)
+{
+    steam_write_register(fd, 0x30, 0x14);
+}
 static void cmd_disable_cursor(int fd, char **args)
 {
     steam_write_register(fd, 0x07, 0x07);
@@ -265,6 +273,16 @@ static struct command commands[] =
         "enable_mouse", 0,
         ": enables the emulation of the mouse by the right pad",
         cmd_enable_mouse,
+    },
+    {
+        "disable_acc", 0,
+        ": disables the accelerometer",
+        cmd_disable_acc,
+    },
+    {
+        "enable_acc", 0,
+        ": enables the accelerometer",
+        cmd_enable_acc,
     },
     {
         "disable_cursor", 0,
