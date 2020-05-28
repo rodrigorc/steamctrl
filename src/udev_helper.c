@@ -45,7 +45,8 @@ int find_udev_devices(find_callback *cb, void *ptr, struct udev *ud, struct udev
     va_end(av);
 
     udev_enumerate_scan_devices(ude);
-    for (struct udev_list_entry *le = udev_enumerate_get_list_entry(ude); le; le = udev_list_entry_get_next(le))
+    struct udev_list_entry *le;
+    for (le = udev_enumerate_get_list_entry(ude); le; le = udev_list_entry_get_next(le))
     {
         const char *sys_name = udev_list_entry_get_name(le);
         res = cb(ptr, ud, sys_name);

@@ -255,7 +255,8 @@ static void cmd_recv(int fd, char **args)
     int res = steam_recv_report(fd, reply);
     if (res > 0)
     {
-        for (int i = 0; i < 64 && i < res; ++i)
+        int i;
+        for (i = 0; i < 64 && i < res; ++i)
             printf("%02x", reply[i]);
         printf("\n");
     }
@@ -320,7 +321,7 @@ static struct command commands[] =
     },
     {
         "led", 1,
-        "N: sets the led brightness to N%",
+        " N: sets the led brightness to N%",
         cmd_led,
     },
     /* WARNING: The following commands are undocumented because they can be used to do evil.
@@ -352,6 +353,7 @@ static struct command commands[] =
 static const struct option long_options[] =
 {
     { "help", no_argument, NULL, 'h' },
+    { "verbose", no_argument, NULL, 'v' },
     { "serial", required_argument, NULL, 's' },
     { "device", required_argument, NULL, 'd' },
     {},
@@ -364,13 +366,15 @@ static void usage(void)
 
     printf("\n");
     printf("where OPTION can be:\n");
-    printf("   -h or --help: print this message\n");
+    printf("   -h or --help: print this message.\n");
+    printf("   -v or --verbose: print what it is doing. Add it twice to see the command bytes.\n");
     printf("   -s SN or --serial SN: looks for the controller with serial number SN.\n");
     printf("   -d DEV or --device DEV: Uses DEV as the hidraw device node, such as /dev/hidraw0.\n");
     printf("If no --serial nor --device option is specified, it will use the first device found.\n");
     printf("\n");
     printf("where COMMAND can be:\n");
-    for (struct command *cmds = commands; cmds->command; ++cmds)
+    struct command *cmds;
+    for (cmds = commands; cmds->command; ++cmds)
         if (cmds->help)
             printf("   %s%s.\n", cmds->command, cmds->help);
     printf("\n");
@@ -395,7 +399,7 @@ int main(int argc, char **argv)
         switch (c)
         {
         case 'v':
-            verbose = 1;
+            verbose += 1;
             break;
         case 's':
             strncpy(info.serial, optarg, sizeof(info.serial));
@@ -448,7 +452,8 @@ int main(int argc, char **argv)
     free(info.dev_name);
     info.dev_name = NULL;
 
-    for (int i = optind; i < argc; ++i)
+    int i;
+    for (i = optind; i < argc; ++i)
     {
         const char *cmd = argv[i];
 
@@ -468,6 +473,8 @@ int main(int argc, char **argv)
             fprintf(stderr, "missing argument for '%s'\n", cmd);
             break;
         }
+        if (verbose)
+            fprintf(stderr, "Running command '%s'\n", cmd);
 
         cmds->func(fd, cmds->nargs ? &argv[i + 1] : NULL);
         i += cmds->nargs;

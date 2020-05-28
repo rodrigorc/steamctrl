@@ -18,6 +18,7 @@
 #if HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -25,13 +26,32 @@
 #include <linux/hidraw.h>
 #include "steam.h"
 
+extern int verbose;
+
+void dump_data(const char *title, const uint8_t *data, int size)
+{
+    if (verbose < 2)
+        return;
+
+    fprintf(stderr, "%s:", title);
+    int i;
+    for (i = 0; i < size; ++i)
+        fprintf(stderr, " %02x", data[i]);
+    fprintf(stderr, "\n");
+}
+
 int steam_recv_report(int fd, uint8_t reply[64])
 {
     uint8_t feat[65] = {0};
     int res;
     res = ioctl(fd, HIDIOCGFEATURE(sizeof(feat)), feat);
     if (res < 0)
+    {
+        if (verbose)
+            fprintf(stderr, "HID-GET Feature failed (%d)\n", errno);
         return res;
+    }
+    dump_data("HID-GET", feat, res);
     if (reply)
         memcpy(reply, feat + 1, 64);
     return res;
@@ -45,12 +65,16 @@ int steam_send_report(int fd, const uint8_t *cmd, int size)
 
     //This command sometimes fails with EPIPE, particularly with the wireless device
     //so retry a few times before giving up.
-    for (int i = 0; i < 10; ++i) // up to 500 ms
+    int i;
+    for (i = 0; i < 10; ++i) // up to 500 ms
     {
+        dump_data("HID-SET", cmd, size);
         res = ioctl(fd, HIDIOCSFEATURE(sizeof(feat)), feat);
         if (res >= 0 || errno != EPIPE)
             return res;
 
+        if (verbose)
+            fprintf(stderr, "HID-SET Feature failed (%d), retrying...\n", errno);
         steam_recv_report(fd, NULL);
         usleep(50000);
     }
